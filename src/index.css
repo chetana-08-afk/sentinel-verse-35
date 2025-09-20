@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smart Tourist Safety Ecosystem - Futuristic Cyberpunk Design System */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Core Dark Theme */
+    --background: 240 10% 3.5%;
+    --foreground: 210 100% 95%;
+
+    /* Cyberpunk Card System */
+    --card: 240 12% 6%;
+    --card-foreground: 210 100% 95%;
+    --card-border: 195 100% 50%;
+
+    /* Neon Accent Colors */
+    --primary: 195 100% 50%;        /* Neon Blue */
+    --primary-foreground: 240 10% 3.5%;
+    --primary-glow: 195 100% 60%;
+
+    --secondary: 348 100% 60%;      /* Safety Red */
+    --secondary-foreground: 210 100% 95%;
+    --secondary-glow: 348 100% 70%;
+
+    --accent: 270 100% 50%;         /* Electric Purple */
+    --accent-foreground: 210 100% 95%;
+    --accent-glow: 270 100% 60%;
+
+    /* Status Colors */
+    --success: 120 100% 40%;        /* Safety Green */
+    --success-foreground: 210 100% 95%;
+    --warning: 45 100% 50%;         /* Alert Orange */
+    --warning-foreground: 240 10% 3.5%;
+    --destructive: 348 100% 60%;    /* Emergency Red */
+    --destructive-foreground: 210 100% 95%;
+
+    /* UI Elements */
+    --muted: 240 12% 12%;
+    --muted-foreground: 210 20% 70%;
+    --popover: 240 12% 8%;
+    --popover-foreground: 210 100% 95%;
+    --border: 240 20% 15%;
+    --input: 240 12% 8%;
+    --ring: 195 100% 50%;
+
+    /* Advanced Gradients */
+    --gradient-cyber: linear-gradient(135deg, hsl(195 100% 50% / 0.2), hsl(270 100% 50% / 0.2));
+    --gradient-danger: linear-gradient(135deg, hsl(348 100% 60% / 0.3), hsl(45 100% 50% / 0.3));
+    --gradient-safe: linear-gradient(135deg, hsl(120 100% 40% / 0.2), hsl(195 100% 50% / 0.2));
+    --gradient-alert: linear-gradient(135deg, hsl(45 100% 50% / 0.3), hsl(348 100% 60% / 0.3));
+
+    /* Glow Effects */
+    --glow-primary: 0 0 20px hsl(195 100% 50% / 0.5);
+    --glow-secondary: 0 0 20px hsl(348 100% 60% / 0.5);
+    --glow-accent: 0 0 20px hsl(270 100% 50% / 0.5);
+    --glow-success: 0 0 20px hsl(120 100% 40% / 0.5);
+
+    /* Spacing & Effects */
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Cyberpunk theme is always dark - no light mode needed for safety systems */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-rajdhani overflow-x-hidden;
+    background-image: 
+      radial-gradient(circle at 20% 20%, hsl(195 100% 50% / 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, hsl(270 100% 50% / 0.05) 0%, transparent 50%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-orbitron font-bold;
+  }
+}
+
+@layer components {
+  .cyber-card {
+    @apply bg-card border border-primary/20 rounded-lg backdrop-blur-sm;
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card))/0.8);
+    box-shadow: 
+      0 0 0 1px hsl(var(--primary) / 0.2),
+      0 4px 12px hsl(var(--primary) / 0.1),
+      inset 0 1px 0 hsl(var(--primary) / 0.1);
+  }
+
+  .cyber-card:hover {
+    box-shadow: 
+      0 0 0 1px hsl(var(--primary) / 0.4),
+      0 8px 24px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 hsl(var(--primary) / 0.2);
+  }
+
+  .glow-button {
+    @apply relative overflow-hidden transition-all duration-300;
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+
+  .glow-button:hover {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.6);
+    transform: translateY(-2px);
+  }
+
+  .sos-button {
+    @apply relative overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, hsl(var(--destructive)), hsl(var(--warning)));
+    box-shadow: 0 0 30px hsl(var(--destructive) / 0.5);
+  }
+
+  .sos-button:hover {
+    box-shadow: 0 0 50px hsl(var(--destructive) / 0.8);
+    transform: scale(1.05);
+  }
+
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+
+  .safety-meter {
+    background: linear-gradient(90deg, 
+      hsl(var(--destructive)) 0%, 
+      hsl(var(--warning)) 50%, 
+      hsl(var(--success)) 100%);
+  }
+
+  .cyber-grid {
+    background-image: 
+      linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .border-glow {
+    box-shadow: 0 0 0 1px currentColor;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .animate-cyber-scan {
+    animation: cyber-scan 3s linear infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.8);
+  }
+}
+
+@keyframes cyber-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
