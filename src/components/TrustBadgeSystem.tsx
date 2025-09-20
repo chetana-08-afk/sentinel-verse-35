@@ -1,259 +1,155 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Shield, 
-  Star, 
-  MapPin, 
-  Car, 
-  Building, 
-  AlertTriangle,
-  Plus,
-  Flag,
-  ThumbsUp,
-  ThumbsDown
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Award, Star, Shield, MapPin, Car, Building, Coffee, ShoppingBag, CheckCircle, Search, Plus } from "lucide-react";
 
 const TrustBadgeSystem = () => {
-  const { toast } = useToast();
-  const [verifiedServices, setVerifiedServices] = useState([
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newReview, setNewReview] = useState({ serviceName: "", rating: 5, comment: "", location: "" });
+
+  const trustedServices = [
     {
-      id: '1',
-      name: 'Grand Plaza Hotel',
-      type: 'hotel',
-      location: 'Times Square, NYC',
-      rating: 4.8,
+      id: 1,
+      name: "Mario's Pizza Palace",
+      type: "restaurant",
+      address: "123 Main St, Manhattan",
       trustScore: 95,
       verified: true,
-      reports: 0,
-      lastUpdated: new Date(Date.now() - 24 * 60 * 60 * 1000)
+      averageRating: 4.8,
+      totalReviews: 127
     },
     {
-      id: '2',
-      name: 'Yellow Cab Co.',
-      type: 'taxi',
-      location: 'Manhattan Area',
-      rating: 4.2,
-      trustScore: 87,
+      id: 2,
+      name: "SafeRide Taxi Co",
+      type: "transportation", 
+      address: "Citywide Service",
+      trustScore: 89,
       verified: true,
-      reports: 2,
-      lastUpdated: new Date(Date.now() - 12 * 60 * 60 * 1000)
-    },
-    {
-      id: '3',
-      name: 'Brooklyn Hostel',
-      type: 'hotel',
-      location: 'Brooklyn, NYC',
-      rating: 3.9,
-      trustScore: 72,
-      verified: false,
-      reports: 5,
-      lastUpdated: new Date(Date.now() - 48 * 60 * 60 * 1000)
+      averageRating: 4.6,
+      totalReviews: 203
     }
-  ]);
+  ];
 
-  const [newReport, setNewReport] = useState({
-    serviceId: '',
-    type: 'positive',
-    description: '',
-    evidence: ''
-  });
+  const handleSubmitReview = () => {
+    if (!newReview.serviceName || !newReview.comment) return;
+    setNewReview({ serviceName: "", rating: 5, comment: "", location: "" });
+  };
 
   const getServiceIcon = (type: string) => {
     switch (type) {
-      case 'hotel': return Building;
-      case 'taxi': return Car;
-      default: return MapPin;
+      case 'restaurant': return Coffee;
+      case 'transportation': return Car;
+      case 'accommodation': return Building;
+      case 'shopping': return ShoppingBag;
+      default: return Shield;
     }
-  };
-
-  const getTrustColor = (score: number) => {
-    if (score >= 90) return "text-success border-success/30 bg-success/10";
-    if (score >= 70) return "text-warning border-warning/30 bg-warning/10";
-    return "text-destructive border-destructive/30 bg-destructive/10";
-  };
-
-  const handleSubmitReport = () => {
-    if (!newReport.serviceId || !newReport.description) {
-      toast({
-        title: "Missing Information",
-        description: "Please select a service and provide description",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Update service based on report
-    setVerifiedServices(prev => prev.map(service => {
-      if (service.id === newReport.serviceId) {
-        const adjustment = newReport.type === 'positive' ? 2 : -5;
-        return {
-          ...service,
-          trustScore: Math.max(0, Math.min(100, service.trustScore + adjustment)),
-          reports: newReport.type === 'negative' ? service.reports + 1 : service.reports,
-          lastUpdated: new Date()
-        };
-      }
-      return service;
-    }));
-
-    setNewReport({ serviceId: '', type: 'positive', description: '', evidence: '' });
-    
-    toast({
-      title: "Report Submitted",
-      description: "Thank you for helping improve the safety ecosystem",
-    });
-  };
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} 
-      />
-    ));
   };
 
   return (
-    <Card className="cyber-card p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-orbitron font-bold">Trust Badge System</h3>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Flag className="w-4 h-4 mr-2" />
-              Report Service
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Report Service Experience</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <select 
-                className="w-full p-2 border rounded-md bg-background"
-                value={newReport.serviceId}
-                onChange={(e) => setNewReport(prev => ({ ...prev, serviceId: e.target.value }))}
-              >
-                <option value="">Select Service</option>
-                {verifiedServices.map(service => (
-                  <option key={service.id} value={service.id}>{service.name}</option>
-                ))}
-              </select>
-              
-              <select 
-                className="w-full p-2 border rounded-md bg-background"
-                value={newReport.type}
-                onChange={(e) => setNewReport(prev => ({ ...prev, type: e.target.value }))}
-              >
-                <option value="positive">Positive Experience</option>
-                <option value="negative">Safety Concern</option>
-              </select>
-              
-              <Textarea
-                placeholder="Describe your experience..."
-                value={newReport.description}
-                onChange={(e) => setNewReport(prev => ({ ...prev, description: e.target.value }))}
-              />
-              
-              <Input
-                placeholder="Evidence (optional - photo/document reference)"
-                value={newReport.evidence}
-                onChange={(e) => setNewReport(prev => ({ ...prev, evidence: e.target.value }))}
-              />
-              
-              <Button onClick={handleSubmitReport} className="w-full">
-                Submit Report
+    <div className="space-y-6">
+      <Card className="cyber-card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <Award className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-orbitron font-bold">Trust Badge System</h2>
+          </div>
+          <Badge variant="outline" className="text-primary border-primary/30">{trustedServices.filter(s => s.verified).length} VERIFIED SERVICES</Badge>
+        </div>
+
+        <div className="grid grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-muted/10 rounded-lg">
+            <Shield className="w-6 h-6 mx-auto mb-2 text-success" />
+            <div className="text-2xl font-bold">{trustedServices.filter(s => s.verified).length}</div>
+            <div className="text-sm text-muted-foreground">Verified Services</div>
+          </div>
+          <div className="text-center p-4 bg-muted/10 rounded-lg">
+            <Star className="w-6 h-6 mx-auto mb-2 text-warning" />
+            <div className="text-2xl font-bold">{trustedServices.reduce((sum, s) => sum + s.totalReviews, 0)}</div>
+            <div className="text-sm text-muted-foreground">Total Reviews</div>
+          </div>
+          <div className="text-center p-4 bg-muted/10 rounded-lg">
+            <CheckCircle className="w-6 h-6 mx-auto mb-2 text-success" />
+            <div className="text-2xl font-bold">{Math.round(trustedServices.reduce((sum, s) => sum + s.trustScore, 0) / trustedServices.length)}%</div>
+            <div className="text-sm text-muted-foreground">Avg Trust Score</div>
+          </div>
+        </div>
+      </Card>
+
+      <Tabs defaultValue="browse" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="browse">Browse Services</TabsTrigger>
+          <TabsTrigger value="review">Submit Review</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="browse" className="space-y-6">
+          <Card className="cyber-card p-4">
+            <div className="flex items-center space-x-2">
+              <Search className="w-5 h-5 text-muted-foreground" />
+              <Input placeholder="Search services..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            </div>
+          </Card>
+
+          <div className="space-y-4">
+            {trustedServices.map((service) => {
+              const ServiceIcon = getServiceIcon(service.type);
+              return (
+                <Card key={service.id} className="cyber-card p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <ServiceIcon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="text-lg font-semibold">{service.name}</h3>
+                        {service.verified && <CheckCircle className="w-5 h-5 text-success" />}
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
+                        <MapPin className="w-4 h-4" />
+                        <span>{service.address}</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Badge variant="outline" className="text-success border-success/30">{service.trustScore}% Trust Score</Badge>
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 text-warning fill-current" />
+                          <span>{service.averageRating} ({service.totalReviews} reviews)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="review">
+          <Card className="cyber-card p-6">
+            <h3 className="text-lg font-orbitron font-bold mb-6">Submit Service Review</h3>
+            <div className="space-y-4">
+              <Input placeholder="Service Name" value={newReview.serviceName} onChange={(e) => setNewReview(prev => ({ ...prev, serviceName: e.target.value }))} />
+              <Input placeholder="Location" value={newReview.location} onChange={(e) => setNewReview(prev => ({ ...prev, location: e.target.value }))} />
+              <div>
+                <label className="text-sm font-semibold">Rating</label>
+                <div className="flex items-center space-x-2 mt-2">
+                  {[1, 2, 3, 4, 5].map((rating) => (
+                    <Star key={rating} className={`w-8 h-8 cursor-pointer ${rating <= newReview.rating ? 'text-warning fill-current' : 'text-muted-foreground'}`} onClick={() => setNewReview(prev => ({ ...prev, rating }))} />
+                  ))}
+                </div>
+              </div>
+              <Textarea placeholder="Share your experience..." value={newReview.comment} onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))} rows={4} />
+              <Button onClick={handleSubmitReview} className="w-full" disabled={!newReview.serviceName || !newReview.comment}>
+                <Plus className="w-4 h-4 mr-2" />
+                Submit Review
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Verified Services */}
-      <div className="space-y-3 mb-4">
-        <h4 className="text-sm font-semibold text-muted-foreground">VERIFIED SERVICES</h4>
-        
-        {verifiedServices.map((service) => {
-          const ServiceIcon = getServiceIcon(service.type);
-          
-          return (
-            <div key={service.id} className="p-4 bg-muted/10 rounded-lg border border-primary/10">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <ServiceIcon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <h5 className="font-semibold">{service.name}</h5>
-                    <p className="text-xs text-muted-foreground">{service.location}</p>
-                  </div>
-                </div>
-                
-                <div className="text-right">
-                  <Badge variant="outline" className={getTrustColor(service.trustScore)}>
-                    <Shield className="w-3 h-3 mr-1" />
-                    {service.trustScore}% Trust
-                  </Badge>
-                  {service.verified && (
-                    <Badge variant="outline" className="text-success border-success/30 ml-2">
-                      VERIFIED
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-1">
-                    {renderStars(service.rating)}
-                    <span className="text-sm font-semibold ml-1">{service.rating}</span>
-                  </div>
-                  
-                  {service.reports > 0 && (
-                    <div className="flex items-center space-x-1 text-warning">
-                      <AlertTriangle className="w-3 h-3" />
-                      <span className="text-xs">{service.reports} reports</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm">
-                    <ThumbsUp className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <ThumbsDown className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="text-xs text-muted-foreground mt-2">
-                Last updated: {service.lastUpdated.toLocaleDateString()}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Legend */}
-      <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-        <div className="flex items-center space-x-2 mb-2">
-          <Shield className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold">Trust Score Legend</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="text-success">90-100%: Highly Trusted</div>
-          <div className="text-warning">70-89%: Moderately Safe</div>
-          <div className="text-destructive">Below 70%: Use Caution</div>
-        </div>
-      </div>
-    </Card>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

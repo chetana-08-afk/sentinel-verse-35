@@ -2,242 +2,109 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  Users, 
-  Plus, 
-  Phone, 
-  Video, 
-  AlertTriangle, 
-  Shield,
-  UserPlus,
-  Mail,
-  Trash2
-} from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Users, Phone, Video, AlertTriangle, Shield, Zap, UserCheck } from "lucide-react";
 
 const FamilySOS = () => {
-  const { toast } = useToast();
-  const [guardians, setGuardians] = useState([
-    {
-      id: '1',
-      name: 'John Johnson',
-      email: 'john@example.com',
-      relationship: 'Father',
-      phone: '+1-555-0101',
-      status: 'online',
-      lastSeen: new Date(Date.now() - 30 * 60 * 1000)
-    },
-    {
-      id: '2',
-      name: 'Mary Johnson',
-      email: 'mary@example.com',
-      relationship: 'Mother',
-      phone: '+1-555-0102',
-      status: 'online',
-      lastSeen: new Date(Date.now() - 15 * 60 * 1000)
-    },
-    {
-      id: '3',
-      name: 'Robert Smith',
-      email: 'robert@example.com',
-      relationship: 'Uncle',
-      phone: '+1-555-0103',
-      status: 'offline',
-      lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000)
-    }
-  ]);
+  const [emergencyActive, setEmergencyActive] = useState(false);
+  const [groupCallActive, setGroupCallActive] = useState(false);
 
-  const [newGuardian, setNewGuardian] = useState({
-    name: '',
-    email: '',
-    relationship: '',
-    phone: ''
-  });
+  const familyMembers = [
+    { id: 1, name: 'John Johnson', role: 'Father', isOnline: true, emergencyContact: true },
+    { id: 2, name: 'Lisa Johnson', role: 'Mother', isOnline: false, emergencyContact: true },
+    { id: 3, name: 'Mike Rodriguez', role: 'Uncle', isOnline: true, emergencyContact: true }
+  ];
 
-  const handleAddGuardian = () => {
-    if (!newGuardian.name || !newGuardian.email) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in name and email",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const guardian = {
-      ...newGuardian,
-      id: Date.now().toString(),
-      status: 'offline' as const,
-      lastSeen: new Date()
-    };
-
-    setGuardians(prev => [...prev, guardian]);
-    setNewGuardian({ name: '', email: '', relationship: '', phone: '' });
-    
-    toast({
-      title: "Guardian Added",
-      description: `${guardian.name} has been added to the SOS group`,
-    });
+  const handleTriggerFamilySOS = () => {
+    setEmergencyActive(true);
+    setTimeout(() => setEmergencyActive(false), 30000);
   };
 
-  const handleRemoveGuardian = (id: string) => {
-    setGuardians(prev => prev.filter(g => g.id !== id));
-    toast({
-      title: "Guardian Removed",
-      description: "Guardian has been removed from the SOS group",
-    });
-  };
-
-  const handleGroupCall = () => {
-    toast({
-      title: "Initiating Group Call",
-      description: "Calling all available guardians...",
-    });
-  };
-
-  const handleEmergencyAlert = () => {
-    toast({
-      title: "🚨 EMERGENCY ALERT SENT",
-      description: "All guardians have been notified immediately",
-      variant: "destructive"
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    return status === 'online' ? 'bg-success' : 'bg-muted-foreground';
+  const handleStartGroupCall = () => {
+    setGroupCallActive(true);
+    setTimeout(() => setGroupCallActive(false), 30000);
   };
 
   return (
-    <Card className="cyber-card p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-orbitron font-bold">Family SOS Group</h3>
-        <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="text-success border-success/30">
-            <Users className="w-3 h-3 mr-1" />
-            {guardians.filter(g => g.status === 'online').length} Online
-          </Badge>
-        </div>
-      </div>
-
-      {/* Emergency Actions */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <Button 
-          onClick={handleEmergencyAlert}
-          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-        >
-          <AlertTriangle className="w-4 h-4 mr-2" />
-          Emergency Alert
-        </Button>
-        <Button onClick={handleGroupCall} variant="outline">
-          <Video className="w-4 h-4 mr-2" />
-          Group Call
-        </Button>
-      </div>
-
-      {/* Guardians List */}
-      <div className="space-y-3 mb-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-semibold text-muted-foreground">GUARDIANS</h4>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Guardian
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Guardian</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <Input
-                  placeholder="Full Name"
-                  value={newGuardian.name}
-                  onChange={(e) => setNewGuardian(prev => ({ ...prev, name: e.target.value }))}
-                />
-                <Input
-                  placeholder="Email Address"
-                  type="email"
-                  value={newGuardian.email}
-                  onChange={(e) => setNewGuardian(prev => ({ ...prev, email: e.target.value }))}
-                />
-                <Input
-                  placeholder="Relationship (e.g., Uncle, Aunt)"
-                  value={newGuardian.relationship}
-                  onChange={(e) => setNewGuardian(prev => ({ ...prev, relationship: e.target.value }))}
-                />
-                <Input
-                  placeholder="Phone Number"
-                  value={newGuardian.phone}
-                  onChange={(e) => setNewGuardian(prev => ({ ...prev, phone: e.target.value }))}
-                />
-                <Button onClick={handleAddGuardian} className="w-full">
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Add Guardian
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {guardians.map((guardian) => (
-          <div key={guardian.id} className="flex items-center space-x-3 p-3 bg-muted/10 rounded-lg border border-primary/10">
-            <div className="relative">
-              <Avatar className="w-10 h-10">
-                <AvatarFallback>{guardian.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-              </Avatar>
-              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full ${getStatusColor(guardian.status)} border-2 border-background`} />
-            </div>
-            
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">{guardian.name}</span>
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm">
-                    <Phone className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Mail className="w-4 h-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => handleRemoveGuardian(guardian.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">{guardian.relationship}</p>
-              <div className="flex items-center space-x-2 mt-1">
-                <Badge variant="outline" className={`text-xs ${guardian.status === 'online' ? 'text-success border-success/30' : 'text-muted-foreground border-muted-foreground/30'}`}>
-                  {guardian.status.toUpperCase()}
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  Last seen: {guardian.lastSeen.toLocaleTimeString()}
-                </span>
-              </div>
+    <div className="space-y-6">
+      {emergencyActive && (
+        <Card className="cyber-card p-6 border-destructive/30 bg-destructive/5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="w-6 h-6 text-destructive animate-pulse" />
+              <h2 className="text-xl font-orbitron font-bold text-destructive">FAMILY SOS ACTIVE</h2>
             </div>
           </div>
-        ))}
-      </div>
+          <div className="flex items-center justify-center space-x-4">
+            <Button onClick={handleStartGroupCall} disabled={groupCallActive} className="bg-success hover:bg-success/90">
+              <Video className="w-4 h-4 mr-2" />
+              {groupCallActive ? 'Call In Progress...' : 'Start Group Video Call'}
+            </Button>
+            <Button variant="outline" onClick={() => setEmergencyActive(false)} className="border-destructive text-destructive">
+              End Emergency
+            </Button>
+          </div>
+        </Card>
+      )}
 
-      {/* Group Settings */}
-      <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-        <div className="flex items-center space-x-2 mb-2">
-          <Shield className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold">Group Settings</span>
+      <Card className="cyber-card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <Users className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-orbitron font-bold">Family Emergency Network</h2>
+          </div>
+          <Badge variant="outline" className={emergencyActive ? 'text-destructive border-destructive/30 animate-pulse' : 'text-success border-success/30'}>
+            {emergencyActive ? 'EMERGENCY ACTIVE' : 'NETWORK READY'}
+          </Badge>
         </div>
-        <ul className="text-xs text-muted-foreground space-y-1">
-          <li>• All members receive simultaneous alerts</li>
-          <li>• Group video calls available 24/7</li>
-          <li>• Escalation to authorities if no response</li>
-        </ul>
-      </div>
-    </Card>
+
+        <div className="text-center mb-6">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="lg" className={`h-16 px-8 text-lg font-bold ${emergencyActive ? 'bg-muted text-muted-foreground cursor-not-allowed' : 'bg-destructive hover:bg-destructive/90 text-white'}`} disabled={emergencyActive}>
+                <Zap className="w-6 h-6 mr-3" />
+                {emergencyActive ? 'EMERGENCY IN PROGRESS' : 'TRIGGER FAMILY SOS'}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="cyber-card">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-destructive font-orbitron">Activate Family Emergency Network</AlertDialogTitle>
+                <AlertDialogDescription>This will immediately notify all emergency contacts. Use only in genuine emergencies.</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleTriggerFamilySOS} className="bg-destructive hover:bg-destructive/90">Activate Emergency Network</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </Card>
+
+      <Card className="cyber-card p-6">
+        <h3 className="text-lg font-orbitron font-bold mb-4">Family Network Members</h3>
+        <div className="space-y-4">
+          {familyMembers.map((member) => (
+            <div key={member.id} className="flex items-center justify-between p-4 bg-muted/10 rounded-lg">
+              <div>
+                <h4 className="font-semibold">{member.name}</h4>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Badge variant="outline" className={member.isOnline ? 'text-success border-success/30' : 'text-muted-foreground border-muted/30'}>
+                    {member.isOnline ? 'ONLINE' : 'OFFLINE'}
+                  </Badge>
+                  {member.emergencyContact && (
+                    <Badge variant="outline" className="text-destructive border-destructive/30">EMERGENCY CONTACT</Badge>
+                  )}
+                </div>
+              </div>
+              <Button variant="outline" size="sm">
+                <Phone className="w-4 h-4 mr-1" />
+                Call
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 };
 
