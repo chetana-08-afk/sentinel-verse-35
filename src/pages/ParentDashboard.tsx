@@ -40,7 +40,25 @@ import TrustBadgeSystem from "@/components/TrustBadgeSystem";
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  
+  // Add error boundary for useAuth
+  let authData;
+  try {
+    authData = useAuth();
+  } catch (error) {
+    console.error('Auth context error:', error);
+    // Fallback behavior
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <p>Setting up parent dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  const { logout, user } = authData;
   
   // Enhanced child data with more comprehensive tracking
   const [childData, setChildData] = useState({
