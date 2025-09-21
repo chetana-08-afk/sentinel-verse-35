@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import ParentMaps from "@/components/ParentMaps";
 import { 
   MapPin, 
   Heart, 
@@ -63,6 +64,22 @@ const ParentDashboard = () => {
   // Health reports state
   const [healthReports, setHealthReports] = useState<any[]>([]);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
+  // Geo boundaries for maps
+  const geoBoundaries = [
+    {
+      lat: 40.7580,
+      lng: -73.9855,
+      radius: 500,
+      name: "Central Park Safe Zone"
+    },
+    {
+      lat: 40.7505,
+      lng: -73.9934,
+      radius: 300,
+      name: "Times Square Area"
+    }
+  ];
 
   // Guardians state
   const [guardians, setGuardians] = useState([
@@ -405,6 +422,15 @@ const ParentDashboard = () => {
         </TabsContent>
 
         <TabsContent value="monitoring" className="space-y-6">
+          {/* Maps Section */}
+          <ParentMaps 
+            childLocation={childData.location}
+            geoBoundaries={geoBoundaries}
+            onBoundaryAlert={(boundary, location) => {
+              console.log(`Alert: Child left ${boundary.name}`, location);
+            }}
+          />
+          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Silent Ping */}
             <Card className="p-6">
